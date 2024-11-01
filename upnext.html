@@ -13,23 +13,23 @@
     }
 
     h2 {
-        font-size: 20px;
+        font-size: 36px;
         color: #0FF2DB;
-        margin: 5px 0px 2px 10px;
+        margin: 7px 0px 3px 10px;
         padding: 0px;
     }
 
     p {
-        font-size: 14px;
+        font-size: 24px;
         color: #FFFFFF;
-        margin: 3px 0px 0px 20px;
+        margin: 5px 0px 0px 30px;
         padding: 0px;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     hr {
-        height: 1px;
+        height: 2px;
         visibility: hidden;
         margin: 0px;
         border: 0px;
@@ -37,24 +37,22 @@
     }
 
     /* add this when teting outide of OBS */
-    /* #next,#ondeck {
+    #next {
         background-color: #741C8C;
-    } */
+    }
   </style>
   <body class="light">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
-      <div id="next" style="left: 1020px; top: 80px; height: 75px; width: 400px; position: absolute; z-index: 1; overflow: hidden">
+      <div id="next" style="left: 735px; top: 350px; height: 400px; width: 600px; position: absolute; z-index: 1; overflow: hidden">
         <h2 id="nextHeading">Up Next:</h2>
         <p id="nextGame">?</p>
         <hr />
-        <p id="nextRunner">By: ?</p>
-      </div>
-      <div id="ondeck" style="left: 1430px; top: 80px; height: 75px; width: 400px; position: absolute; z-index: 1; overflow: hidden">
-        <h2 id="ondeckHeading">On Deck:</h2>
-        <p id="ondeckGame">?</p>
+        <p id="nextCategory">?</p>
         <hr />
-        <p id="ondeckRunner">By: ?</p>
+        <p id="nextRunner">?</p>
+        <hr />
+        <p id="nextCouch">?</p>
       </div>
     </div>
     <script>
@@ -67,11 +65,12 @@
       }
 
       function render() {
-        let now = Date.now()
+        let now = Date.parse('2024-11-02T11:40:00-06:00');
+        // let now = Date.now();
     
         let i = 0;
         while (i < 100) {
-            let sched = Date.parse(scheduleJSON.data.items[i].scheduled)
+            let sched = Date.parse(scheduleJSON.data.items[i].scheduled);
             if (sched > now) {
                 break
             }
@@ -80,32 +79,20 @@
         }
         
         const game = document.getElementById("nextGame");
+        const category = document.getElementById("nextCategory");
         const runner = document.getElementById("nextRunner");
+        const couch = document.getElementById("nextCouch");
 
-        const nextInfo = scheduleJSON.data.items[i]
-        console.log("next item: " + i + " - " + JSON.stringify(nextInfo))
+        const nextInfo = scheduleJSON.data.items[i];
+        console.log("next item: " + i + " - " + JSON.stringify(nextInfo));
 
-        game.textContent = nextInfo.data[0] + " - " + nextInfo.data[1]
-
+        game.textContent = nextInfo.data[0]
+        category.textContent = nextInfo.data[1]
         runner.textContent = "By: " + cleanRunner(nextInfo.data[2]);
 
-        const game2 = document.getElementById("ondeckGame");
-        const runner2 = document.getElementById("ondeckRunner");
-
-        if (i > scheduleJSON.data.items.length) {
-            console.log("no game on deck")
-
-            game2.textContent = ""
-            runner2.textContent = ""
-            return
+        if (nextInfo.data[4]) {
+            couch.textContent = "With: " + cleanRunner(nextInfo.data[4]);
         }
-
-        const ondeckInfo = scheduleJSON.data.items[i+1]
-        console.log("ondeck item: " + i + " - " + JSON.stringify(ondeckInfo))
-
-        game2.textContent = ondeckInfo.data[0] + " - " + ondeckInfo.data[1]
-
-        runner2.textContent = "By: " + cleanRunner(ondeckInfo.data[2]);
       }
       
       render();
